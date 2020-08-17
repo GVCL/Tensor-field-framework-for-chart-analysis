@@ -18,4 +18,10 @@ Things to be taken care before runing the code:
 1. Reset the path of pretrained model in Text_DET_REC/CRAFT_TextDetector/__Init__.py, line 47, 160, and 176
 2. Reset the path of pretrained model in Text_DET_REC/Deep_TextRecognition/__Init__.py, line 95, and 98
 
+### To run the module
+1. The [Retrieve_Text.py](https://github.com/GVCL/Tensor-field-framework-for-chart-analysis/blob/master/Text_DET_REC/Retrieve_Text.py) is used to retrieve text from the specified locations of the chart image with it's respective funtion call
+2. The funtion calls takes both image file and it's annotated xml file as input
+3. These function calls are used in [Final_Reconstruct](https://github.com/GVCL/Tensor-field-framework-for-chart-analysis/tree/master/Final_Reconstruct) module for reconstruction
+4. The [Draw_text_boxes.py](https://github.com/GVCL/Tensor-field-framework-for-chart-analysis/blob/master/Text_DET_REC/Draw_text_boxes.py) is used to visalize text recognition and detection results of chart image using both Tesseract API and above discussed method
+
 
