@@ -1,15 +1,11 @@
 import pytesseract
 from pytesseract import Output
-# install tesseract along
-#  brew install tesseract
-# This formula contains only the "eng", "osd", and "snum" language data files.
-# If you need any other supported languages, run `brew install tesseract-lang`.
 import cv2
 import numpy as np
 from PIL import Image
 import xml.etree.ElementTree as ET
-from Text_DET_REC.CRAFT_TextDetector import detect_text
-from Text_DET_REC.Deep_TextRecognition import text_recog
+from Computation_and_visualization_tool.Text_DET_REC.CRAFT_TextDetector import detect_text
+from Computation_and_visualization_tool.Text_DET_REC.Deep_TextRecognition import text_recog
 
 img = cv2.imread("/Chart_Reconstruct/Data/histogram/hg-3/hg-3.png")
 canvas = cv2.imread("/Chart_Reconstruct/Data/histogram/hg-3/canvas.png")
