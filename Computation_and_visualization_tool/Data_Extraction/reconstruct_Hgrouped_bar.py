@@ -14,7 +14,7 @@ import os
 def GH_bar(filename):
     image_name = os.path.basename(filename).split(".png")[0]
     path = os.path.dirname(filename)+'/'
-    data_tensors = pd.read_csv(path+"tensor_vote_matrix.csv", sep=",", index_col=False)
+    data_tensors = pd.read_csv(path+"tensor_vote_matrix_"+image_name+".csv", sep=",", index_col=False)
 
     X = len(data_tensors["X"].unique())
     Y = len(data_tensors["Y"].unique())
@@ -80,7 +80,7 @@ def GH_bar(filename):
     last_pt = unused_centers[dist.index(min(dist))]
     base_val=(first_pt[1]+last_pt[1])//2
     heights = list(np.array(unused_centers)[:,1]-base_val)
-    baseline_pts = [unused_centers[i] for i in range(len(heights)) if(heights[i]<neigh_lmt)]
+    baseline_pts = [unused_centers[i] for i in range(len(heights)) if(heights[i]<=neigh_lmt)]
     for i in baseline_pts:
         unused_centers.remove(i)
 
@@ -94,11 +94,13 @@ def GH_bar(filename):
             if(len(bar_heights)==0):
                 flag = True
                 if(abs(unused_centers[j][1]-unused_centers[i][1])<8):
-                    bar_heights+=[unused_centers[i][1]-base_val]
-                    bar_centers+=[(unused_centers[i][0]+unused_centers[j][0])//2]
-                    bar_width = abs(unused_centers[i][0]-unused_centers[j][0])
-                    unused_centers = np.delete(unused_centers,[i,j],axis=0)
-                    i-=1
+                    if abs(unused_centers[j][0]-unused_centers[i][0])>10:
+                        #almost equal height
+                        bar_heights+=[unused_centers[i][1]-base_val]
+                        bar_centers+=[(unused_centers[i][0]+unused_centers[j][0])//2]
+                        bar_width = abs(unused_centers[i][0]-unused_centers[j][0])
+                        unused_centers = np.delete(unused_centers,[i,j],axis=0)
+                        i-=1
                     break
             elif(abs(unused_centers[j][0]-unused_centers[i][0]-bar_width)<8 and abs(unused_centers[j][1]-unused_centers[i][1])<8):
                 bar_heights+=[unused_centers[i][1]-base_val]
@@ -259,7 +261,7 @@ def GH_bar(filename):
     L = [['X']+group_leg_labels+['bar_width','title','x-title','y-title']]
     L = L + [[labels[0]]+group_heights[0].tolist()+[bar_width, get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i]]+group_heights[i].tolist() for i in range(1,len(labels))]
-    with open(path+'data.csv', 'w', newline='') as file:
+    with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerows(L)
 

@@ -1,9 +1,11 @@
 import pandas as pd
 from compute_saliency import *
 from scale import *
+import os
 
-def generate_tensor_vote(data, path):
-
+def generate_tensor_vote(data, filename):
+    image_name = os.path.basename(filename).split(".png")[0]
+    path = os.path.dirname(filename)+'/'
     location_data = data[["X", "Y"]].copy()
     X = len(data["X"].unique())
     Y = len(data["Y"].unique())
@@ -111,7 +113,7 @@ def generate_tensor_vote(data, path):
     df_aniso_val = pd.DataFrame(anisotropic_val_mat, columns=["ani_val1", "ani_val2"])
     df = pd.concat([location_data, df_eigen_val, df_eigen_vec, df_aniso_val, df_cl_cp_val], axis=1)
 
-    df.to_csv(path+"tensor_vote_matrix.csv", index=False, sep=",")
+    df.to_csv(path+"tensor_vote_matrix_"+image_name+".csv", index=False, sep=",")
     print("Tensor Voting computation done!")
 
 

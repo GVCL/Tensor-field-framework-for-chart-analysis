@@ -14,7 +14,7 @@ import os
 def hist(filename):
     image_name = os.path.basename(filename).split(".png")[0]
     path = os.path.dirname(filename)+'/'
-    data_tensors = pd.read_csv(path+"tensor_vote_matrix.csv", sep=",", index_col=False)
+    data_tensors = pd.read_csv(path+"tensor_vote_matrix_"+image_name+".csv", sep=",", index_col=False)
 
     X = len(data_tensors["X"].unique())
     Y = len(data_tensors["Y"].unique())
@@ -195,7 +195,7 @@ def hist(filename):
     L = [['bin_center','freq','bin_width','title','x-title','y-title']]
     L = L + [[bin_center[0], bin_height[0], bin_width[0], get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[bin_center[i], bin_height[i], bin_width[i]] for i in range(1,len(bin_center))]
-    with open(path+'data.csv', 'w', newline='') as file:
+    with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerows(L)
 

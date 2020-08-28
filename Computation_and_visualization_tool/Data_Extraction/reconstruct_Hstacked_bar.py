@@ -13,7 +13,7 @@ import os
 def SH_bar(filename):
     image_name = os.path.basename(filename).split(".png")[0]
     path = os.path.dirname(filename)+'/'
-    data_tensors = pd.read_csv(path+"tensor_vote_matrix.csv", sep=",", index_col=False)
+    data_tensors = pd.read_csv(path+"tensor_vote_matrix_"+image_name+".csv", sep=",", index_col=False)
 
     X = len(data_tensors["X"].unique())
     Y = len(data_tensors["Y"].unique())
@@ -38,7 +38,7 @@ def SH_bar(filename):
 
     data = np.array([cord_list['x_val'],cord_list['y_val']]).T
 
-    db = DBSCAN(eps=5, min_samples=3).fit(data)
+    db = DBSCAN(eps=5, min_samples=2).fit(data)
     labels = db.labels_
 
     centers=[]
@@ -269,7 +269,7 @@ def SH_bar(filename):
     L = [['X']+group_leg_labels+['bar_width','title','x-title','y-title']]
     L = L + [[labels[0]]+group_heights[0].tolist()+[bar_width, get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i]]+group_heights[i].tolist() for i in range(1,len(labels))]
-    with open(path+'data.csv', 'w', newline='') as file:
+    with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerows(L)
 

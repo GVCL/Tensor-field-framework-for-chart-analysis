@@ -12,7 +12,7 @@ import cv2
 path = "/Chart_Reconstruct/Generated_data/scatter/sc01/"
 image_name = path.split('/')
 image_name = image_name[len(image_name)-2]
-data_tensors = pd.read_csv(path+"tensor_vote_matrix.csv", sep=",", index_col=False)
+data_tensors = pd.read_csv(path+"tensor_vote_matrix_"+image_name+".csv", sep=",", index_col=False)
 X = len(data_tensors["X"].unique())
 Y = len(data_tensors["Y"].unique())
 print(X,Y)

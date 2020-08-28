@@ -1,9 +1,11 @@
 from scipy import ndimage as ndi
 import cv2
+import os
 import pandas as pd
 import numpy as np
 from compute_saliency import *
 from tensor_voting_computation import generate_tensor_vote
+
 
 def color_normalization(arr, arr1, arr2, X, Y):
     # Normalizing LAB values
@@ -51,8 +53,9 @@ def structure_tensor(image, sigma=1, mode='constant', cval=0):
     return Axx, Axy, Ayy
 
 
-def compute_structure_tensor(data, image, path):
-
+def compute_structure_tensor(data, image, filename):
+    image_name = os.path.basename(filename).split(".png")[0]
+    path = os.path.dirname(filename)+'/'
     location_data = data[["X", "Y"]].copy()
     X = len(data["X"].unique())
     Y = len(data["Y"].unique())
@@ -128,11 +131,11 @@ def compute_structure_tensor(data, image, path):
     )
 
     df = pd.concat([location_data, df_cov_mat, df_eigen_val, df_eigen_vec, df_cl_cp_val], axis=1)
-    df.to_csv(path+"structure_tensor.csv", index=False, sep=",")
+    df.to_csv(path+"structure_tensor_"+image_name+".csv", index=False, sep=",")
     print ("Computed Structure Tensor.")
     data_add = [[0 for i in range(2)] for j in range(Y*X)]
     # data_loc = [[0 for i in range(2)] for j in range(Y*X)]
     data_add = np.array(data_add, dtype=np.float64)
 
     # Tensor Voting computation
-    generate_tensor_vote(df, path)
+    generate_tensor_vote(df, filename)

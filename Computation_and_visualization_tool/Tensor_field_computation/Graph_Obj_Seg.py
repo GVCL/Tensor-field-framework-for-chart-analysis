@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from Chart_Seg.Graph_Obj_Fill import color_fill
+from Computation_and_visualization_tool.Tensor_field_computation.Graph_Obj_Fill import color_fill
 
 def segment(img,chart_type):
     # if alpha channel is having zero it represents no color

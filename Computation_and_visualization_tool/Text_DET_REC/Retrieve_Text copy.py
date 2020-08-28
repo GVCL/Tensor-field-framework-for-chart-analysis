@@ -1,23 +1,28 @@
 import cv2
+import re
 import numpy as np
 import pytesseract
 from pytesseract import Output
 from scipy.ndimage import rotate
 from PIL import Image
+from skimage.io import imread_collection
+import xml.etree.ElementTree as ET
+
+from collections import Counter
+from Computation_and_visualization_tool.Tensor_field_computation.Graph_Obj_Seg import segment
+
 from Computation_and_visualization_tool.Text_DET_REC.CRAFT_TextDetector import detect_text
 from Computation_and_visualization_tool.Text_DET_REC.Deep_TextRecognition import text_recog
 
-def remove_legend(img,root):
-    #to remove text and legend
-    for obj in root.findall('object'):
-        name = obj.find('name').text
-        if name == 'legend':
-            box = obj.find('bndbox')
-            (x0,y0)=(int(box.find('xmin').text),int(box.find('ymin').text))
-            (x1,y1)=(int(box.find('xmax').text),int(box.find('ymax').text))
-            img[y0-1:y1+1,x0-1:x1+1,:]= np.ones(img[y0-1:y1+1,x0-1:x1+1,:].shape, dtype=np.uint8)*255
-
 def remove_text(img):
+    # scale_factor_x=3
+    # scale_factor_y=3
+    # img = cv2.resize(img, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_CUBIC)
+    # img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    # kernel = np.ones((1, 1), np.uint8)
+    # img = cv2.erode(img, kernel, iterations=1)
+    # img  = cv2.dilate(img, kernel, iterations=1)
+    # img = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
     detected_label,boxes,box_centers,slope = detect_text(img)
     label = text_recog()
     centers=[]
@@ -63,14 +68,54 @@ def get_text_labels(img,root):
     ylabel_im  = cv2.dilate(img, kernel, iterations=1)
     detected_xlabel,boxes,xbox_centers,slope = detect_text(cv2.cvtColor(xlabel_im,cv2.COLOR_GRAY2BGR))
     Xlabel = text_recog()
+    print(Xlabel)
+    for i in range(len(boxes)):
+        img=cv2.imread("/Users/daggubatisirichandana/PycharmProjects/chart_percept/Computation_and_visualization_tool/Text_DET_REC/Deep_TextRecognition/Detected_Images/"+str(i)+".png")
+        d = pytesseract.image_to_data(img, output_type=Output.DICT)
+        print(d['text'])
+    print("---",pytesseract.image_to_data(rotate(xlabel_im, np.mean(slope), cval=255), output_type=Output.DICT)['text'])
+    print("---",pytesseract.image_to_data(xlabel_im, output_type=Output.DICT)['text'])
     if(len(Xlabel)!=0 and sorted(Xlabel)[0].isnumeric()):
         xbox_centers = [xbox_centers[i] for i in range(len(Xlabel)) if Xlabel[i].isnumeric()]
         Xlabel = [int(i) for i in Xlabel if i.isnumeric()]
+    else:
+        d = pytesseract.image_to_data(xlabel_im, output_type=Output.DICT)
+        '''left = x; top = y; right = x + width; bottom = y + height
+            centroid of box is x+w/2,y+h/2 i.e left+width/2, top+height/2'''
+        text=[]
+        box_center=[]
+        for i in range(len(d['text'])):
+           if len(d['text'][i]) != 0 :
+               text += [d['text'][i]]
+               box_center += [[d['left'][i]+d['width'][i]/2, d['top'][i]+d['height'][i]/2]]
+        Xlabel=text
+        xbox_centers=box_center
+
+    # nx,ny = ylabel_im.shape
+    # Image.fromarray(ylabel_im).resize((int(ny*1.5), int(nx*1.5)), Image.BICUBIC).save("Ylabel_img.png", dpi=(100,100))
+    # newdata=pytesseract.image_to_osd(cv2.imread("Ylabel_img.png"),nice=1)
+    # print(newdata.info)
+    # print(re.search('(?<=Rotate: )\d+', newdata).group(0))
+
     detected_ylabel,boxes,ybox_centers,slope = detect_text(cv2.cvtColor(ylabel_im,cv2.COLOR_GRAY2BGR))
+
     Ylabel = text_recog()
     if(len(Ylabel)!=0 and sorted(Ylabel)[0].isnumeric()):
         ybox_centers = [ybox_centers[i] for i in range(len(Ylabel)) if Ylabel[i].isnumeric()]
         Ylabel = [int(i) for i in Ylabel if i.isnumeric()]
+    else:
+        d = pytesseract.image_to_data(ylabel_im, output_type=Output.DICT)
+        '''left = x; top = y; right = x + width; bottom = y + height
+            centroid of box is x+w/2,y+h/2 i.e left+width/2, top+height/2'''
+        text=[]
+        box_center=[]
+        for i in range(len(d['text'])):
+           if len(d['text'][i]) != 0 :
+               text += [d['text'][i]]
+               box_center += [[d['left'][i]+d['width'][i]/2, d['top'][i]+d['height'][i]/2]]
+        Ylabel=text
+        ybox_centers=box_center
+
     xbox_centers=np.array(xbox_centers)
     ybox_centers=np.array(ybox_centers)
 
@@ -114,7 +159,8 @@ def get_title(img,root):
             title_im=img[y0-1:y1+1,x0-1:x1+1,:]
             flag = False
     if flag:
-        return ''
+        return 'No Title'
+
     #preprocess the image
     scale_factor_x=3
     scale_factor_y=3
@@ -123,10 +169,6 @@ def get_title(img,root):
     kernel = np.ones((1, 1), np.uint8)
     img = cv2.erode(img, kernel, iterations=1)
     title_im  = cv2.dilate(img, kernel, iterations=1)
-
-    _,_,_,slope = detect_text(cv2.cvtColor(title_im,cv2.COLOR_GRAY2BGR))
-    title_im = rotate(title_im, np.mean(slope), cval=255)
-
 
     # data extraction from the image
     title = pytesseract.image_to_data(title_im, output_type=Output.DICT)['text']
@@ -146,7 +188,7 @@ def get_xtitle(img,root):
             xtitle_im=img[y0-1:y1+1,x0-1:x1+1,:]
             flag = False
     if flag:
-        return ''
+        return 'No X-title'
     #preprocess the image
     scale_factor_x=3
     scale_factor_y=3
@@ -155,9 +197,6 @@ def get_xtitle(img,root):
     kernel = np.ones((1, 1), np.uint8)
     img = cv2.erode(img, kernel, iterations=1)
     xtitle_im  = cv2.dilate(img, kernel, iterations=1)
-
-    _,_,_,slope = detect_text(cv2.cvtColor(xtitle_im,cv2.COLOR_GRAY2BGR))
-    xtitle_im = rotate(xtitle_im, np.mean(slope), cval=255)
 
     # data extraction from the image
     x = pytesseract.image_to_data(xtitle_im, output_type=Output.DICT)['text']
@@ -173,10 +212,11 @@ def get_ytitle(img,root):
             box = obj.find('bndbox')
             (x0,y0)=(int(box.find('xmin').text),int(box.find('ymin').text))
             (x1,y1)=(int(box.find('xmax').text),int(box.find('ymax').text))
-            ytitle_im= img[y0-1:y1+1,x0-1:x1+1,:]
+            # To extend label boundaries by 10 in all directions for proper char identification
+            ytitle_im= rotate(img[y0-1:y1+1,x0-1:x1+1,:], 270)
             flag = False
     if flag:
-        return ''
+        return 'No Y-title'
 
     #preprocess the image
     scale_factor_x=3
@@ -186,10 +226,6 @@ def get_ytitle(img,root):
     kernel = np.ones((1, 1), np.uint8)
     img = cv2.erode(img, kernel, iterations=1)
     ytitle_im  = cv2.dilate(img, kernel, iterations=1)
-
-    _,_,_,slope = detect_text(cv2.cvtColor(ytitle_im,cv2.COLOR_GRAY2BGR))
-    ytitle_im = rotate(ytitle_im, np.mean(slope), cval=255)
-
 
     # data extraction from the image
     y = pytesseract.image_to_data(ytitle_im, output_type=Output.DICT)['text']
@@ -209,7 +245,7 @@ def get_legends(img,root):
             legend_im=img[y0-1:y1+1,x0-1:x1+1,:]
             flag = False
     if flag:
-        return 'No Legend'
+        return 'No legends'
 
     #preprocess the image
     img = cv2.resize(legend_im, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
@@ -219,7 +255,8 @@ def get_legends(img,root):
     img = cv2.dilate(img, kernel, iterations=1)
     box_img,boxes,txtbox_center,slope = detect_text(cv2.cvtColor(img,cv2.COLOR_GRAY2BGR))
     labels=text_recog()
-   # rescale coordinates back
+
+    # rescale coordinates back
     boxes = (np.array(boxes)/3).tolist()
     txtbox_center = (np.array(txtbox_center)/3).tolist()
     # To remove text region from image, hoping background is white
@@ -240,6 +277,7 @@ def get_legends(img,root):
     legend_centers, legend_colors = zip(*sorted(zip(legend_centers, legend_colors),reverse=True))
     legend_centers=np.array(legend_centers)
     legend_colors=np.array(legend_colors)
+
     legend_labels=[]
     i=0
     while(i<len(legend_centers)):
@@ -255,5 +293,12 @@ def get_legends(img,root):
             legend_colors = np.delete(legend_colors,i,axis=0)
             i-=1
         i+=1
+    # # To get all colors count in image
+    # color_cnt = Counter([tuple(colors) for i in legend_im for colors in i])
+    # non_bg_cnt = np.shape(legend_im)[0]*np.shape(legend_im)[1]-color_cnt[(255,255,255)]
+    # del color_cnt[(255,255,255)]
+    # legend_colors = [k for k, v in color_cnt.items() if v/non_bg_cnt > 0.1]
+    # legend_centers, legend_colors, legend_labels = zip(*sorted(zip(legend_centers, legend_colors, legend_labels)))
+
     return legend_colors.tolist()[::-1],legend_labels[::-1]
 

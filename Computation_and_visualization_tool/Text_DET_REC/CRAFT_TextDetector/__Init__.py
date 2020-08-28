@@ -14,6 +14,7 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 
+from scipy.ndimage import rotate
 from PIL import Image
 import pytesseract
 
@@ -53,19 +54,19 @@ parser.add_argument('--canvas_size', default=1280, type=int, help='image size fo
 parser.add_argument('--mag_ratio', default=1.5, type=float, help='image magnification ratio')
 parser.add_argument('--poly', default=False, action='store_true', help='enable polygon type')
 parser.add_argument('--show_time', default=False, action='store_true', help='show processing time')
-parser.add_argument('--test_folder', default='./figures/', type=str, help='folder path to input images')
+# parser.add_argument('--test_folder', default='/Users/daggubatisirichandana/PycharmProjects/chart_percept/Computation_and_visualization_tool/Text_DET_REC/CRAFT_TextDetector/figures/', type=str, help='folder path to input images')
 parser.add_argument('--refine', default=False, action='store_true', help='enable link refiner')
 parser.add_argument('--refiner_model', default='weights/craft_refiner_CTW1500.pth', type=str, help='pretrained refiner model')
 
 args = parser.parse_args()
 
 
-""" For test images in a folder """
-image_list, _, _ = file_utils.get_files(args.test_folder)
+# """ For test images in a folder """
+# image_list, _, _ = file_utils.get_files(args.test_folder)
 
-result_folder = './result/'
-if not os.path.isdir(result_folder):
-    os.mkdir(result_folder)
+# result_folder = '/Users/daggubatisirichandana/PycharmProjects/chart_percept/Computation_and_visualization_tool/Text_DET_REC/CRAFT_TextDetector/result/'
+# if not os.path.isdir(result_folder):
+#     os.mkdir(result_folder)
 
 def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, refine_net=None):
     t0 = time.time()
@@ -156,27 +157,45 @@ def detect_text(image):
 
 
     # load data
-    # image = cv2.imread("/Users/daggubatisirichandana/PycharmProjects/chart_percept/Text_DET_REC/CRAFT-TextDetector/figures/ximage.png")
     for root, dirs, files in os.walk("/Users/daggubatisirichandana/PycharmProjects/chart_percept/Computation_and_visualization_tool/Text_DET_REC/Deep_TextRecognition/Detected_Images/"):
         for file in files:
             os.remove(os.path.join(root, file))
     bboxes, polys, score_text = test_net(net, image, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly, refine_net)
     box_centers=[]
+    slope=[]
+    l=[]
     dup_img = image.copy()
     for i, box in enumerate(bboxes):
         poly = np.array(box).astype(np.int32).reshape((-1))
         poly = poly.reshape(-1, 2)
-        x0,x1,y0,y1=(poly[0][0],poly[1][0],poly[1][1],poly[2][1])
+        if(abs(poly[2][1]-poly[1][1])<100 and abs(abs(poly[2][1]-poly[1][1])-abs(poly[1][0]-poly[0][0]))<40):
+            #if the item is single char
+            slope += ['_']
+        elif(abs(poly[1][0]-poly[0][0])>abs(poly[2][1]-poly[1][1])):
+            slope += [(poly[1][1]-poly[0][1])/(poly[1][0]-poly[0][0])*45]
+            l +=  [(poly[1][1]-poly[0][1])/(poly[1][0]-poly[0][0])*45]
+        else:
+            slope += [((poly[1][1]-poly[0][1])/(poly[1][0]-poly[0][0])*45)-90]
+            l +=  [((poly[1][1]-poly[0][1])/(poly[1][0]-poly[0][0])*45)-90]
+        x0,x1,y0,y1=(min(poly[:,0]),max(poly[:,0]),min(poly[:,1]),max(poly[:,1]))
         if x0<0:
             x0=0
         if y0<0:
             y0=0
         box_centers+=[[(x0+x1)/2,(y0+y1)/2]]
 
-        Image.fromarray(image[y0:y1,x0:x1,:]).save("/Users/daggubatisirichandana/PycharmProjects/chart_percept/Computation_and_visualization_tool/Text_DET_REC/Deep_TextRecognition/Detected_Images/"+str(i)+".png", 'PNG')
-        # cv2.imwrite("/Users/daggubatisirichandana/PycharmProjects/chart_percept/Text_DET_REC/Deep_TextRecognition/Detected_Images/"+str(i)+".png",image[y0:y1,x0:x1,:])
+        ime_name="/Users/daggubatisirichandana/PycharmProjects/chart_percept/Computation_and_visualization_tool/Text_DET_REC/Deep_TextRecognition/Detected_Images/"+str(i)+".png"
+        Image.fromarray(image[y0:y1,x0:x1,:]).save(ime_name, 'PNG', dpi=(72,72))
         cv2.polylines(dup_img, [poly.reshape((-1, 1, 2))], True, color=(0, 0, 255), thickness=2)
-    return dup_img,bboxes,box_centers
+    for i in range(len(bboxes)):
+        if(slope[i]=='_'):
+            slope[i] = 0
+            if(len(l)!=0):
+                slope[i]=np.mean(l)
+        ime_name="/Users/daggubatisirichandana/PycharmProjects/chart_percept/Computation_and_visualization_tool/Text_DET_REC/Deep_TextRecognition/Detected_Images/"+str(i)+".png"
+        cv2.imwrite(ime_name,rotate(cv2.imread(ime_name,0), slope[i], cval=255))
+
+    return dup_img,bboxes,box_centers,slope
 
 
     # for k, image_path in enumerate(image_list):
