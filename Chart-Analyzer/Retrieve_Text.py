@@ -114,7 +114,7 @@ def get_title(img,root):
             title_im=img[y0-1:y1+1,x0-1:x1+1,:]
             flag = False
     if flag:
-        return ''
+        return '_'
     #preprocess the image
     scale_factor_x=3
     scale_factor_y=3
@@ -146,7 +146,7 @@ def get_xtitle(img,root):
             xtitle_im=img[y0-1:y1+1,x0-1:x1+1,:]
             flag = False
     if flag:
-        return ''
+        return '_'
     #preprocess the image
     scale_factor_x=3
     scale_factor_y=3
@@ -176,7 +176,7 @@ def get_ytitle(img,root):
             ytitle_im= img[y0-1:y1+1,x0-1:x1+1,:]
             flag = False
     if flag:
-        return ''
+        return '_'
 
     #preprocess the image
     scale_factor_x=3
@@ -209,7 +209,7 @@ def get_legends(img,root):
             legend_im=img[y0-1:y1+1,x0-1:x1+1,:]
             flag = False
     if flag:
-        return 'No Legend'
+        return '_'
 
     #preprocess the image
     img = cv2.resize(legend_im, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
