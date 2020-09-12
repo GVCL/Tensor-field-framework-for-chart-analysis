@@ -73,7 +73,6 @@ def get_text_labels(img,root):
         Ylabel = [int(i) for i in Ylabel if i.isnumeric()]
     xbox_centers=np.array(xbox_centers)
     ybox_centers=np.array(ybox_centers)
-
     # In xbox_centers for same x value find mid point of both boxes in same line
     i=0
     while i<(len(xbox_centers)):
@@ -94,6 +93,9 @@ def get_text_labels(img,root):
             Ylabel = np.delete(Ylabel, l[1:])
             ybox_centers = np.delete(ybox_centers, l[1:], axis=0) # for 2D array
         i+=1
+    if(len(Xlabel)==0 or len(Ylabel)==0):
+        print("Failed Recognizing text label ... !")
+        exit(0)
     # To convert box_centers to original pixel coordinate system in image rather than cropped image
     xbox_centers[:,0]=(xbox_centers[:,0]/scale_factor_x)+X_x0-1
     xbox_centers[:,1]=(xbox_centers[:,1]/scale_factor_y)+X_y0-1

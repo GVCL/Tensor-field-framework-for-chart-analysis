@@ -178,8 +178,8 @@ def bar(filename):
     plt.savefig(path+'reconstructed_'+image_name+".png")
 
     # Writing data to CSV file
-    L = [['X','Y','bar_type','title','x-title','y-title']]
-    L = L + [[labels[0], bin_heights[0], 'Vertical Simple Bar', get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
+    L = [['X','Y','title','x-title','y-title']]
+    L = L + [[labels[0], bin_heights[0], get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i], bin_heights[i]] for i in range(1,len(labels))]
     with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
@@ -425,8 +425,8 @@ def G_bar(filename):
 
 
     # Writing data to CSV file
-    L = [['X']+group_leg_labels+['bar_type','title','x-title','y-title']]
-    L = L + [[labels[0]]+group_heights[0].tolist()+['Vertical Grouped Bar', get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
+    L = [['X']+group_leg_labels+['bar_width','title','x-title','y-title']]
+    L = L + [[labels[0]]+group_heights[0].tolist()+[bar_width, get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i]]+group_heights[i].tolist() for i in range(1,len(labels))]
     with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
@@ -610,8 +610,8 @@ def H_bar(filename):
 
 
     # Writing data to CSV file
-    L = [['X','Y','bar_type','title','x-title','y-title']]
-    L = L + [[labels[0], bin_heights[0], 'Horizontal Simple Bar', get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
+    L = [['X','Y','title','x-title','y-title']]
+    L = L + [[labels[0], bin_heights[0], get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i], bin_heights[i]] for i in range(1,len(labels))]
     with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
@@ -865,8 +865,8 @@ def GH_bar(filename):
     plt.savefig(path+'reconstructed_'+image_name+".png")
 
     # Writing data to CSV file
-    L = [['X']+group_leg_labels+['bar_type','title','x-title','y-title']]
-    L = L + [[labels[0]]+group_heights[0].tolist()+['Horizontal Grouped Bar', get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
+    L = [['X']+group_leg_labels+['bar_width','title','x-title','y-title']]
+    L = L + [[labels[0]]+group_heights[0].tolist()+[bar_width, get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i]]+group_heights[i].tolist() for i in range(1,len(labels))]
     with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
@@ -1053,8 +1053,8 @@ def hist(filename):
     plt.savefig(path+'reconstructed_'+image_name+".png")
 
     # Writing data to CSV file
-    L = [['bin_center','freq','bin_width','bar_type','title','x-title','y-title']]
-    L = L + [[bin_center[0], bin_height[0], bin_width[0], 'Histogram', get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
+    L = [['bin_center','freq','bin_width','title','x-title','y-title']]
+    L = L + [[bin_center[0], bin_height[0], bin_width[0], get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[bin_center[i], bin_height[i], bin_width[i]] for i in range(1,len(bin_center))]
     with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
@@ -1319,8 +1319,8 @@ def SH_bar(filename):
     plt.savefig(path+'reconstructed_'+image_name+".png")
 
     # Writing data to CSV file
-    L = [['X']+group_leg_labels+['bar_type','title','x-title','y-title']]
-    L = L + [[labels[0]]+group_heights[0].tolist()+['Horizontal Stacked Bar', get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
+    L = [['X']+group_leg_labels+['bar_width','title','x-title','y-title']]
+    L = L + [[labels[0]]+group_heights[0].tolist()+[bar_width, get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i]]+group_heights[i].tolist() for i in range(1,len(labels))]
     with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
@@ -1575,9 +1575,10 @@ def S_bar(filename):
     plt.tight_layout()
     plt.savefig(path+'reconstructed_'+image_name+".png")
 
+
     # Writing data to CSV file
-    L = [['X']+group_leg_labels+['bar_type','title','x-title','y-title']]
-    L = L + [[labels[0]]+group_heights[0].tolist()+['Vertical Stacked Bar', get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
+    L = [['X']+group_leg_labels+['bar_width','title','x-title','y-title']]
+    L = L + [[labels[0]]+group_heights[0].tolist()+[bar_width, get_title(img,root), get_xtitle(img,root), get_ytitle(img,root)]]
     L = L + [[labels[i]]+group_heights[i].tolist() for i in range(1,len(labels))]
     with open(path+'data_'+image_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file, delimiter=',')
