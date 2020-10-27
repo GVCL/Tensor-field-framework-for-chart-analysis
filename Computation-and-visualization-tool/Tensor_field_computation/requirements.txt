@@ -15,7 +15,7 @@ Cheetah==2.4.4
 Click==7.0
 cloudpickle==1.2.2
 configparser==3.5.0
-cryptography==2.1.4
+cryptography==3.2
 cssselect==0.9.1
 cycler==0.10.0
 Cython==0.29.13
