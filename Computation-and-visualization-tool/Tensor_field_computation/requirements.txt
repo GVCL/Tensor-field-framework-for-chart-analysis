@@ -102,7 +102,7 @@ prompt-toolkit==1.0.18
 protobuf==3.9.1
 ptyprocess==0.6.0
 pycrypto==2.6.1
-Pygments==2.4.2
+Pygments==2.7.4
 pygobject==3.26.1
 pyOpenSSL==17.5.0
 pyparsing==2.4.5
