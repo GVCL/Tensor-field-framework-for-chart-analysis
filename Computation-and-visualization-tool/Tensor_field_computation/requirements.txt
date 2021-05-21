@@ -136,7 +136,7 @@ six==1.14.0
 subprocess32==3.5.4
 Tempita==0.5.2
 tensorboard==1.14.0
-tensorflow==1.14.0
+tensorflow==2.5.0
 tensorflow-estimator==1.14.0
 tensorflow-tensorboard==0.4.0
 termcolor==1.1.0
