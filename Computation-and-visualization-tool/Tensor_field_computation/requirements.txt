@@ -94,7 +94,7 @@ pathlib2==2.3.5
 pbr==5.1.2
 pexpect==4.7.0
 pickleshare==0.7.5
-Pillow==6.2.1
+Pillow==8.2.0
 plotly==4.1.1
 POT==0.6.0
 prometheus-client==0.5.0
