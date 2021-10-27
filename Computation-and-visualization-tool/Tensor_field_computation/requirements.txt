@@ -25,7 +25,7 @@ dash-core-components==1.1.2
 dash-html-components==1.0.1
 dash-renderer==1.0.1
 dash-table==4.2.0
-dask==1.1.5
+dask==2021.10.0
 decorator==4.4.1
 defusedxml==0.5.0
 dnspython==1.15.0
