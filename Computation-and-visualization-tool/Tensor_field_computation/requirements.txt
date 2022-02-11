@@ -99,7 +99,7 @@ plotly==4.1.1
 POT==0.6.0
 prometheus-client==0.5.0
 prompt-toolkit==1.0.18
-protobuf==3.9.1
+protobuf==3.15.0
 ptyprocess==0.6.0
 pycrypto==2.6.1
 Pygments==2.4.2
