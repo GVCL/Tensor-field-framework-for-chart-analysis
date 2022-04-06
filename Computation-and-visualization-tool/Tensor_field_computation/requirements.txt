@@ -79,7 +79,7 @@ nbconvert==5.4.0
 nbformat==4.4.0
 networkx==2.2
 nltk==3.4.5
-notebook==6.1.5
+notebook==6.4.10
 num2words==0.5.9
 numpy==1.16.6
 olefile==0.45.1
