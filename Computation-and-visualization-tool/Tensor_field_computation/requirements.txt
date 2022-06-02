@@ -45,7 +45,7 @@ geopy==1.21.0
 google-pasta==0.1.7
 grpcio==1.22.0
 h5py==2.10.0
-html5lib==0.9999999
+html5lib==0.99999999
 httplib2==0.9.2
 idna==2.8
 imageio==2.6.1
